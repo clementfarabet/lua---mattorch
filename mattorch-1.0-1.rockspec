@@ -41,10 +41,11 @@ build = {
          link_directories (${TORCH_LIBRARY_DIR})
          target_link_libraries (mattorch ${TORCH_LIBRARIES} ${MATLAB_LIBRARIES})
 
-         set (CMAKE_INSTALL_PREFIX ${TORCH_PREFIX})
          install_files(/share/lua/5.1/ mattorch.lua)
          install_targets(/lib/lua/5.1/ mattorch)
    ]],
 
-   variables = {}
+   variables = {
+      CMAKE_INSTALL_PREFIX = "$(PREFIX)"
+   }
 }
