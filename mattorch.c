@@ -236,10 +236,19 @@ static int save_table_l(lua_State *L) {
     // uses 'key' (at index -2) and 'value' (at index -1)
     const char *name = lua_tostring(L,-2);
     THDoubleTensor *tensor = (THDoubleTensor *)luaT_checkudata(L, -1, luaT_checktypename2id(L, "torch.DoubleTensor"));
+    THDoubleTensor *tensorc = THDoubleTensor_newContiguous(tensor,0);
+
+    // infer size and stride
+    int k;
+    mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
+    const long ndims = tensorc->nDimension;
+    for (k=0; k<ndims; k++) {
+      size[k] = tensor->size[ndims-k-1];
+    }
 
     // create matlab array
-    mxArray *pm = mxCreateNumericArray(tensor->nDimension, (const mwSize *)tensor->size, 
-                                       mxDOUBLE_CLASS, mxREAL);
+    mxArray *pm = mxCreateNumericArray(ndims, size, mxDOUBLE_CLASS, mxREAL);
+
     // copy tensor into array
     memcpy((void *)(mxGetPr(pm)), 
            (void *)(THDoubleTensor_data(tensor)),
@@ -250,6 +259,9 @@ static int save_table_l(lua_State *L) {
 
     // removes 'value'; keeps 'key' for next iteration
     lua_pop(L, 1);
+
+    // cleanup
+    THDoubleTensor_free(tensorc);
   }
 
   // cleanup

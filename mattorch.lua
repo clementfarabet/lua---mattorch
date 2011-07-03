@@ -46,9 +46,9 @@ A table with all the loaded variables is returned:
 ,
 save = [[Exports variables to a .mat file.
 Supported now:
-  > tensor1 = torch.Tensor(...)
-  > tensor2 = torch.Tensor(...)
-  > tensor3 = torch.Tensor(...)
+  > tensor1 = torch.DoubleTensor(...)
+  > tensor2 = torch.DoubleTensor(...)
+  > tensor3 = torch.DoubleTensor(...)
   > mattorch.save('output.mat', tensor1)
   > -- OR
   > list = {myvar = tensor1, othervar = tensor2, thisvar = tensor3}
@@ -70,7 +70,7 @@ mattorch.load = function(path)
 
 -- save
 mattorch.save = function(path,vars)
-                 if not path then
+                 if not path or not vars then
                     xlua.error('please provide a path','mattorch.save',help.save)
                  end
                  if type(vars) == 'userdata' and torch.typename(vars) == 'torch.DoubleTensor' then
@@ -79,11 +79,15 @@ mattorch.save = function(path,vars)
 
                  elseif type(vars) == 'table' then
                     for i,v in ipairs(vars) do
-                       if v then xlua.error('can only export table of named variables, e.g. {x=..., y=...}') end
+                       if v then
+                          xlua.error('can only export table of named variables, e.g. {x=..., y=...}',
+                                     'mattorch.save',help.save) 
+                       end
                     end
                     for _,v in pairs(vars) do
-                       if type(v) ~= 'userdata' or torch.typename(v) ~= 'torch.Tensor' then 
-                          xlua.error('can only export table of torch.Tensors')
+                       if type(v) ~= 'userdata' or torch.typename(v) ~= 'torch.DoubleTensor' then 
+                          xlua.error('can only export table of torch.DoubleTensor',
+                                     'mattorch.save',help.save)
                        end
                     end
                     libmattorch.saveTable(path,vars)
