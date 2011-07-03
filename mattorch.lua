@@ -73,7 +73,7 @@ mattorch.save = function(path,vars)
                  if not path then
                     xlua.error('please provide a path','mattorch.save',help.save)
                  end
-                 if type(vars) == 'userdata' and torch.typename(vars) == 'torch.Tensor' then
+                 if type(vars) == 'userdata' and torch.typename(vars) == 'torch.DoubleTensor' then
                     local tensor = torch.Tensor():resizeAs(vars):copy(vars)
                     libmattorch.saveTensor(path,tensor)
 

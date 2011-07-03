@@ -7,12 +7,12 @@ source = {
 }
 
 description = {
-   summary = "Provides a wrapper around Matlab's lib",
+   summary = "Provides a wrapper around Matlab's matrix file I/O library.",
    detailed = [[
          This package provides a simple wrapper around
          Matlab's library, to export/import Mat files.
-         Matrices of all types are supported and imported
-         exported as torch.Tensors.
+         Matrices of all types are supported and imported/
+         exported as torch.Tensors (for now Torch5, soon Torch7).
    ]],
    homepage = "",
    license = "MIT/X11" -- or whatever you like
@@ -41,8 +41,8 @@ build = {
          link_directories (${TORCH_LIBRARY_DIR})
          target_link_libraries (mattorch ${TORCH_LIBRARIES} ${MATLAB_LIBRARIES})
 
-         install_files(/share/lua/5.1/ mattorch.lua)
-         install_targets(/lib/lua/5.1/ mattorch)
+         install_files(/lua mattorch.lua)
+         install_targets(/lib mattorch)
    ]],
 
    variables = {
