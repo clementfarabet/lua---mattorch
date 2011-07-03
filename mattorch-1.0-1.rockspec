@@ -7,12 +7,12 @@ source = {
 }
 
 description = {
-   summary = "Provides a wrapper around Matlab's matrix file I/O library.",
+   summary = "Provides an interface between Matlab's matrix format and Torch7's tensor.",
    detailed = [[
          This package provides a simple wrapper around
-         Matlab's library, to export/import Mat files.
-         Matrices of all types are supported and imported/
-         exported as torch.Tensors (for now Torch5, soon Torch7).
+         Matlab's library, to export/import Mat files
+         from/to the torch.Tensor class (Torch7).
+         Matlab matrices of all types can be imported.
    ]],
    homepage = "",
    license = "MIT/X11" -- or whatever you like

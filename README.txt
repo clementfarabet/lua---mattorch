@@ -16,9 +16,3 @@ $ lua
 
 -- load:
 > loaded = mattorch.load('input.mat')
-
-NOTES:
-the package depends on external packages: 'xlua' and 'torch'.
-'xlua' is automatically installed by Luarocks, but Torch5 needs
-to be installed manually.
-Matlab also needs to be installed, and in the path.
