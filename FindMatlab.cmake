@@ -101,7 +101,7 @@ IF(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
 ENDIF(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
 
 IF (NOT MATLAB_FOUND AND Matlab_FIND_REQUIRED)
-        MESSAGE(ERROR "Matlab libraries not found, please add matlab to your path")
+        MESSAGE(FATAL_ERROR "Matlab libraries not found, please add matlab to your path")
 ENDIF (NOT MATLAB_FOUND AND Matlab_FIND_REQUIRED)
 
 MARK_AS_ADVANCED(
