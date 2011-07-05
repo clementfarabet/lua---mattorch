@@ -1,7 +1,13 @@
 
 # Find Torch (luaT+TH)
 
-find_program (TORCH_EXECUTABLE lua $ENV{PATH} PATH)
+if (TORCH_PREFIX)
+   find_program (TORCH_EXECUTABLE lua ${TORCH_PREFIX} PATH)
+endif (TORCH_PREFIX)
+
+if (NOT TORCH_EXECUTABLE)
+   find_program (TORCH_EXECUTABLE lua $ENV{PATH} PATH)
+endif (NOT TORCH_EXECUTABLE)
 
 if (TORCH_EXECUTABLE)
   get_filename_component (TORCH_BIN_DIR ${TORCH_EXECUTABLE} PATH)
@@ -16,6 +22,8 @@ set (TORCH_LIBRARIES ${TORCH_TH} ${TORCH_luaT} ${TORCH_lua})
 find_path (TORCH_INCLUDE_DIR lua.h
            ${TORCH_BIN_DIR}/../include/ 
            NO_DEFAULT_PATH)
+
+set (TORCH_INCLUDE_DIR ${TORCH_INCLUDE_DIR} ${TORCH_INCLUDE_DIR}/TH)
 
 set (TORCH_PACKAGE_PATH "${TORCH_BIN_DIR}/../share/lua/5.1" CACHE PATH "where Lua searches for Lua packages")
 set (TORCH_PACKAGE_CPATH "${TORCH_BIN_DIR}/../lib/lua/5.1" CACHE PATH "where Lua searches for library packages")
