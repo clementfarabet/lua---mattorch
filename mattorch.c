@@ -196,7 +196,7 @@ static int save_tensor_l(lua_State *L) {
 
   // load tensor
   THDoubleTensor *tensor = (THDoubleTensor *)luaT_checkudata(L, 2, luaT_checktypename2id(L, "torch.DoubleTensor"));
-  THDoubleTensor *tensorc = THDoubleTensor_newContiguous(tensor,0);
+  THDoubleTensor *tensorc = THDoubleTensor_newContiguous(tensor);
 
   // infer size and stride
   int k;
@@ -236,7 +236,7 @@ static int save_table_l(lua_State *L) {
     // uses 'key' (at index -2) and 'value' (at index -1)
     const char *name = lua_tostring(L,-2);
     THDoubleTensor *tensor = (THDoubleTensor *)luaT_checkudata(L, -1, luaT_checktypename2id(L, "torch.DoubleTensor"));
-    THDoubleTensor *tensorc = THDoubleTensor_newContiguous(tensor,0);
+    THDoubleTensor *tensorc = THDoubleTensor_newContiguous(tensor);
 
     // infer size and stride
     int k;

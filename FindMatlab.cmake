@@ -1,118 +1,125 @@
+# - this module looks for Matlab
+# Defines:
+#  MATLAB_INCLUDE_DIR: include path for mex.h, engine.h
+#  MATLAB_LIBRARIES:   required libraries: libmex, etc
+#  MATLAB_MAT_LIBRARY: path to libmat.lib
+#  MATLAB_MEX_LIBRARY: path to libmex.lib
+#  MATLAB_MX_LIBRARY:  path to libmx.lib
+#  MATLAB_ENG_LIBRARY: path to libeng.lib
+#
+# downloaded from http://gccxml.org/Bug/view.php?id=8207
+# modified by Marco Scoffier Aug 12, 2011
+
 SET(MATLAB_FOUND 0)
-
-MESSAGE(STATUS "Searching for Matlab")
-
 IF(WIN32)
-        
-        SET(CMAKE_PROGRAM_PATH
-                "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MATLAB\\R2009b;MATLABROOT]/bin"
-        )
-        
-        SET(CMAKE_LIBRARY_PATH 
-                "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MATLAB\\R2009b;MATLABROOT]/extern/lib/win32/microsoft"
-        )
-        
-        FIND_PATH(MATLAB_INCLUDE_DIR
-                "mex.h"
-                "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MATLAB\\R2009b;MATLABROOT]/extern/include"
-        )
-        
-        SET (CMAKE_FIND_LIBRARY_PREFIXES "lib")
-        
-ELSE(WIN32)
-
-  IF(APPLE)
-
-    FIND_PROGRAM(MATLAB_MEXEXT mexext) 
-    GET_FILENAME_COMPONENT(CMAKE_PROGRAM_PATH 
-                ${MATLAB_MEXEXT} PATH)
-
-    SET(CMAKE_LIBRARY_PATH
-        "${CMAKE_PROGRAM_PATH}/maci64/"
+  IF(${CMAKE_GENERATOR} MATCHES "Visual Studio .*" OR ${CMAKE_GENERATOR} MATCHES "NMake Makefiles")
+    SET(MATLAB_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.0;MATLABROOT]/extern/lib/win32/microsoft/")
+  ELSE(${CMAKE_GENERATOR} MATCHES "Visual Studio .*" OR ${CMAKE_GENERATOR} MATCHES "NMake Makefiles")
+      IF(${CMAKE_GENERATOR} MATCHES "Borland")
+        # Same here, there are also: bcc50 and bcc51 directories
+        SET(MATLAB_ROOT "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.0;MATLABROOT]/extern/lib/win32/microsoft/bcc54")
+      ELSE(${CMAKE_GENERATOR} MATCHES "Borland")
+        MESSAGE(FATAL_ERROR "Generator not compatible: ${CMAKE_GENERATOR}")
+      ENDIF(${CMAKE_GENERATOR} MATCHES "Borland")
+  ENDIF(${CMAKE_GENERATOR} MATCHES "Visual Studio .*" OR ${CMAKE_GENERATOR} MATCHES "NMake Makefiles")
+  FIND_LIBRARY(MATLAB_MEX_LIBRARY
+    libmex
+    ${MATLAB_ROOT}
     )
-    
-    FIND_PATH(MATLAB_INCLUDE_DIR
-            "mex.h"
-        "${CMAKE_PROGRAM_PATH}/../extern/include/"
+  FIND_LIBRARY(MATLAB_MX_LIBRARY
+    libmx
+    ${MATLAB_ROOT}
+    )
+  FIND_LIBRARY(MATLAB_ENG_LIBRARY
+    libeng
+    ${MATLAB_ROOT}
+    )
+  FIND_LIBRARY(MATLAB_MAT_LIBRARY
+    libmat
+    ${MATLAB_ROOT}
     )
 
-  ELSE(APPLE)
-
-    FIND_PROGRAM(MATLAB_MEXEXT mexext) 
-    GET_FILENAME_COMPONENT(CMAKE_PROGRAM_PATH 
-                ${MATLAB_MEXEXT} PATH)
-
-    SET(CMAKE_LIBRARY_PATH
-        "${CMAKE_PROGRAM_PATH}/glnxa64/"
+  FIND_PATH(MATLAB_INCLUDE_DIR
+    "mex.h"
+    "[HKEY_LOCAL_MACHINE\\SOFTWARE\\MathWorks\\MATLAB\\7.0;MATLABROOT]/extern/include"
     )
-    
-    FIND_PATH(MATLAB_INCLUDE_DIR
-            "mex.h"
-        "${CMAKE_PROGRAM_PATH}/../extern/include/"
+ELSE( WIN32 )
+  IF(NOT MATLAB_ROOT)
+    SET(MATLAB_ROOT $ENV{MATLAB_ROOT})
+  ENDIF(NOT MATLAB_ROOT)
+  IF(NOT MATLAB_ROOT)
+    MESSAGE(STATUS "** WARNING no MATLAB_ROOT setting to /opt/matlab")
+    MESSAGE(STATUS "** you can set the correct MATLAB_ROOT in your environment")
+    MESSAGE(STATUS "** eg. bash: export MATLAB_ROOT=/home/john/matlab")
+    SET(MATLAB_ROOT /opt/matlab)
+  ENDIF(NOT MATLAB_ROOT)    
+  MESSAGE(STATUS "** using: " ${MATLAB_ROOT})
+  IF(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    # Regular x86
+    SET(MATLAB_SYS
+      ${MATLAB_ROOT}/bin/glnx86
+      )
+  ELSE(CMAKE_SIZEOF_VOID_P EQUAL 4)
+    # AMD64:
+    SET(MATLAB_SYS
+      ${MATLAB_ROOT}/bin/glnxa64
+      )
+  ENDIF(CMAKE_SIZEOF_VOID_P EQUAL 4)
+  FIND_LIBRARY(MATLAB_MEX_LIBRARY
+    mex
+    ${MATLAB_SYS}
     )
-
-  ENDIF(APPLE)
+  FIND_LIBRARY(MATLAB_MX_LIBRARY
+    mx
+    ${MATLAB_SYS}
+    )
+  FIND_LIBRARY(MATLAB_MAT_LIBRARY
+    mat
+    ${MATLAB_SYS}
+    )
+  FIND_LIBRARY(MATLAB_ENG_LIBRARY
+    eng
+    ${MATLAB_SYS}
+    )
+  FIND_PATH(MATLAB_INCLUDE_DIR
+    "mex.h"
+    ${MATLAB_ROOT}/extern/include
+    )
 
 ENDIF(WIN32)
 
 # This is common to UNIX and Win32:
-
-FIND_PROGRAM(MATLAB_MEX_EXECUTABLE
-        mex
-        NO_CMAKE_ENVIRONMENT_PATH
-)
-FIND_PROGRAM(MATLAB_MEXEXT_EXECUTABLE
-        mexext
-        NO_CMAKE_ENVIRONMENT_PATH
-)
-FIND_LIBRARY(MATLAB_MEX_LIBRARY
-        mex
-        NO_CMAKE_ENVIRONMENT_PATH
-)
-FIND_LIBRARY(MATLAB_MX_LIBRARY
-        mx
-        NO_CMAKE_ENVIRONMENT_PATH
-)
-FIND_LIBRARY(MATLAB_MAT_LIBRARY
-        mat
-        NO_CMAKE_ENVIRONMENT_PATH
-)
-FIND_LIBRARY(MATLAB_ENG_LIBRARY
-        eng
-        NO_CMAKE_ENVIRONMENT_PATH
-)
-
 SET(MATLAB_LIBRARIES
-        ${MATLAB_MEX_LIBRARY}
-        ${MATLAB_MX_LIBRARY}
-        ${MATLAB_MAT_LIBRARY}
-        ${MATLAB_ENG_LIBRARY}
+  ${MATLAB_MEX_LIBRARY}
+  ${MATLAB_MX_LIBRARY}
+  ${MATLAB_ENG_LIBRARY}
 )
 
-execute_process ( COMMAND ${MATLAB_MEXEXT_EXECUTABLE}
-                OUTPUT_VARIABLE MATLAB_MEX_EXT
-                OUTPUT_STRIP_TRAILING_WHITESPACE)
-                
-IF(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
-        MESSAGE("-- Matlab binaries: ${CMAKE_PROGRAM_PATH}")
-        MESSAGE("-- Matlab libraries: ${CMAKE_LIBRARY_PATH}")
-        MESSAGE("-- MEX extension: ${MATLAB_MEX_EXT}")
-        SET(MATLAB_FOUND 1)
-ENDIF(MATLAB_INCLUDE_DIR AND MATLAB_LIBRARIES)
-
-IF (NOT MATLAB_FOUND AND Matlab_FIND_REQUIRED)
-        MESSAGE(FATAL_ERROR "Matlab libraries not found, please add matlab to your path")
-ENDIF (NOT MATLAB_FOUND AND Matlab_FIND_REQUIRED)
+IF(MATLAB_INCLUDE_DIR 
+    AND MATLAB_MEX_LIBRARY 
+    AND MATLAB_MAT_LIBRARY
+    AND MATLAB_ENG_LIBRARY
+    AND MATLAB_MX_LIBRARY)
+  SET(MATLAB_LIBRARIES ${MATLAB_MX_LIBRARY} ${MATLAB_MEX_LIBRARY} ${MATLAB_ENG_LIBRARY} ${MATLAB_MAT_LIBRARY})
+ENDIF(MATLAB_INCLUDE_DIR 
+    AND MATLAB_MEX_LIBRARY 
+    AND MATLAB_MAT_LIBRARY
+    AND MATLAB_ENG_LIBRARY
+    AND MATLAB_MX_LIBRARY)
 
 MARK_AS_ADVANCED(
-  MATLAB_LIBRARIES
   MATLAB_MEX_LIBRARY
-  MATLAB_MAT_LIBRARY
   MATLAB_MX_LIBRARY
   MATLAB_ENG_LIBRARY
   MATLAB_INCLUDE_DIR
-  MATLAB_FOUND
-  MATLAB_MEX_EXECUTABLE
-  MATLAB_MEXEXT_EXECUTABLE
-  MATLAB_MEX_EXT
+  MATLAB_ROOT
 )
+
+INCLUDE(FindPackageHandleStandardArgs)
+FIND_PACKAGE_HANDLE_STANDARD_ARGS(Matlab 
+    MATLAB_INCLUDE_DIR 
+    MATLAB_MEX_LIBRARY 
+    MATLAB_MAT_LIBRARY
+    MATLAB_ENG_LIBRARY
+    MATLAB_MX_LIBRARY )
+
