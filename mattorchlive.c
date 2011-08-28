@@ -44,6 +44,14 @@ int mattorch_dostring(const char *string)
   return err;
 }
 
+int mattorch_dorequire(const char *name)
+{
+  lua_getglobal(L, "require");
+  lua_pushstring(L, name);
+  lua_pcall(L, 1, 0, 0);
+  return 0;
+}
+
 mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, mxArray **inputs)
 {
   // (1) push function on top of stack
