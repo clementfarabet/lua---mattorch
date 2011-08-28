@@ -1,5 +1,10 @@
 
-require "torch"
+luaprefix = '/Users/clement/lua-local'
+package.path='./?.lua;'..luaprefix..'/share/lua/5.1/?.lua;'..luaprefix..'/share/lua/5.1/?/init.lua;'..luaprefix..'/lib/lua/5.1/?.lua;'..luaprefix..'/lib/lua/5.1/?/init.lua'
+package.cpath='./?.so;./?.dylib;'..luaprefix..'/lib/lua/5.1/?.so;'..luaprefix..'/lib/lua/5.1/?.dylib;'..luaprefix..'/lib/lua/5.1/loadall.so'..luaprefix..'/lib/lua/5.1/loadall.dylib'
+
+require 'sys'
+require 'torch'
 
 transpose = function(img)
                print('from Lua: receiving img of size: ', img:size())
@@ -13,3 +18,6 @@ transpose = function(img)
                   error('require a matrix with 2 or 3 dimensions')
                end
             end
+
+print('loaded example.lua with success!')
+
