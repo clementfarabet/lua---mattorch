@@ -52,7 +52,7 @@ int mattorch_dorequire(const char *name)
   return 0;
 }
 
-mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, mxArray **inputs)
+mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, const mxArray **inputs)
 {
   // (1) push function on top of stack
   lua_getfield(L, LUA_GLOBALSINDEX, funcname);
