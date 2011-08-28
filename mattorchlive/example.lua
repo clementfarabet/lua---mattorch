@@ -1,9 +1,8 @@
 
-luaprefix = '/Users/clement/lua-local'
+luaprefix = '/home/cf65/lua-local'
 package.path='./?.lua;'..luaprefix..'/share/lua/5.1/?.lua;'..luaprefix..'/share/lua/5.1/?/init.lua;'..luaprefix..'/lib/lua/5.1/?.lua;'..luaprefix..'/lib/lua/5.1/?/init.lua'
 package.cpath='./?.so;./?.dylib;'..luaprefix..'/lib/lua/5.1/?.so;'..luaprefix..'/lib/lua/5.1/?.dylib;'..luaprefix..'/lib/lua/5.1/loadall.so'..luaprefix..'/lib/lua/5.1/loadall.dylib'
 
-require 'sys'
 require 'torch'
 
 transpose = function(img)
