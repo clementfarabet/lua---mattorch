@@ -5,6 +5,68 @@
 #include "mattorchlive.h"
 
 static lua_State *L = NULL;
+static const char *progname = "lua";
+
+static void lstop (lua_State *L, lua_Debug *ar) {
+  (void)ar;  /* unused arg. */
+  lua_sethook(L, NULL, 0, 0);
+  luaL_error(L, "interrupted!");
+}
+
+static void laction (int i) {
+  signal(i, SIG_DFL); /* if another SIGINT happens before lstop,
+                              terminate process (default action) */
+  lua_sethook(L, lstop, LUA_MASKCALL | LUA_MASKRET | LUA_MASKCOUNT, 1);
+}
+
+static void l_message (const char *pname, const char *msg) {
+  if (pname) fprintf(stderr, "%s: ", pname);
+  fprintf(stderr, "%s\n", msg);
+  fflush(stderr);
+}
+
+static int report (lua_State *L, int status) {
+  if (status && !lua_isnil(L, -1)) {
+    const char *msg = lua_tostring(L, -1);
+    if (msg == NULL) msg = "(error object is not a string)";
+    l_message(progname, msg);
+    lua_pop(L, 1);
+  }
+  return status;
+}
+
+static int traceback (lua_State *L) {
+  if (!lua_isstring(L, 1))  /* 'message' not a string? */
+    return 1;  /* keep it intact */
+  lua_getfield(L, LUA_GLOBALSINDEX, "debug");
+  if (!lua_istable(L, -1)) {
+    lua_pop(L, 1);
+    return 1;
+  }
+  lua_getfield(L, -1, "traceback");
+  if (!lua_isfunction(L, -1)) {
+    lua_pop(L, 2);
+    return 1;
+  }
+  lua_pushvalue(L, 1);  /* pass error message */
+  lua_pushinteger(L, 2);  /* skip this function and traceback */
+  lua_call(L, 2, 1);  /* call debug.traceback */
+  return 1;
+}
+
+static int docall (lua_State *L, int narg, int clear) {
+  int status;
+  int base = lua_gettop(L) - narg;  /* function index */
+  lua_pushcfunction(L, traceback);  /* push traceback function */
+  lua_insert(L, base);  /* put it under chunk and args */
+  signal(SIGINT, laction);
+  status = lua_pcall(L, narg, (clear ? 0 : LUA_MULTRET), base);
+  signal(SIGINT, SIG_DFL);
+  lua_remove(L, base);  /* remove traceback function */
+  /* force a complete garbage collection in case of errors */
+  if (status != 0) lua_gc(L, LUA_GCCOLLECT, 0);
+  return status;
+}
 
 void mattorch_init(void) {
   /* Set CWD before starting Lua */
@@ -12,7 +74,9 @@ void mattorch_init(void) {
 
   /* Declare a Lua State, open the Lua State and load all libraries */
   L = lua_open();
+  lua_gc(L, LUA_GCSTOP, 0);
   luaL_openlibs(L);
+  lua_gc(L, LUA_GCRESTART, 0);
 }
 
 void mattorch_close(void) {
@@ -20,36 +84,42 @@ void mattorch_close(void) {
   lua_close(L);
 }
 
-int mattorch_dofile(const char *file)
+int mattorch_dofile(const char *name)
 {
   /* Load user file */
-  int err = luaL_dofile(L, file);
+  int err = luaL_loadfile(L, name) || docall(L, 0, 1);
 
   /* Error ? */
   if (err) {
-    printf("<%s> ERROR: %s could not be loaded\n", LIBNAME, file);
+    printf("<%s> ERROR: %s could not be loaded\n", LIBNAME, name);
   }
-  return err;
+  return report(L, err);
 }
 
-int mattorch_dostring(const char *string)
+int mattorch_dostring(const char *s)
 {
   /* Load user file */
-  int err = luaL_dostring(L, string);
+  int err = luaL_loadbuffer(L, s, strlen(s), "name") || docall(L, 0, 1);
 
   /* Error ? */
   if (err) {
     printf("<%s> ERROR: could not parse string\n", LIBNAME);
   }
-  return err;
+  return report(L, err);
 }
 
 int mattorch_dorequire(const char *name)
 {
+  /* Load library */
   lua_getglobal(L, "require");
   lua_pushstring(L, name);
-  lua_pcall(L, 1, 0, 0);
-  return 0;
+  int err = docall(L, 1, 1);
+
+  /* Error ? */
+  if (err) {
+    printf("<%s> ERROR: could not require Library\n", LIBNAME);
+  }
+  return report(L, err);
 }
 
 mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, const mxArray **inputs)
