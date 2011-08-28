@@ -41,6 +41,11 @@ build = {
          SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
          include_directories (${MATLAB_INCLUDE_DIR} ${TORCH_INCLUDE_DIR})
+         add_library (mattorchlive STATIC mattorchlive.c)
+         link_directories (${TORCH_LIBRARY_DIR})
+         target_link_libraries (mattorchlive ${TORCH_LIBRARIES} ${MATLAB_LIBRARIES})
+
+         include_directories (${MATLAB_INCLUDE_DIR} ${TORCH_INCLUDE_DIR})
          add_library (mattorch SHARED mattorch.c)
          link_directories (${TORCH_LIBRARY_DIR})
          target_link_libraries (mattorch ${TORCH_LIBRARIES} ${MATLAB_LIBRARIES})
