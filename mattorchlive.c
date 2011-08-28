@@ -1,6 +1,7 @@
 
 #include <stdlib.h>
 #include <stdio.h>
+#include <signal.h>
 
 #include "mattorchlive.h"
 
@@ -132,7 +133,7 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
   for (i=0; i<ninputs; i++) {
 
     // get single matrix
-    mxArray *pa = inputs[i];
+    const mxArray *pa = inputs[i];
 
     // get dimensions
     mwSize ndims = mxGetNumberOfDimensions(pa);
