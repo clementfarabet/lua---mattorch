@@ -44,7 +44,7 @@ int mattorch_dostring(const char *string)
   return err;
 }
 
-mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, mxArray **inputs)
+mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, const mxArray **inputs)
 {
   // (1) push function on top of stack
   lua_getfield(L, LUA_GLOBALSINDEX, funcname);

@@ -29,4 +29,4 @@ int mattorch_dostring(const char *string);
 /* torch.Tensors() automatically. */
 mxArray ** mattorch_callfunc(const char *funcname, 
                              int ninputs, int noutputs, 
-                             mxArray **inputs);
+                             const mxArray **inputs);

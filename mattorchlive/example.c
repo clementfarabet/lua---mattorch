@@ -17,18 +17,18 @@ void mexFunction(int nlhs, mxArray *plhs[], int nrhs, const mxArray *prhs[])
   }
 
   /* 1 arg required */
-  if (nlhs < 1) {
+  if (nrhs < 1) {
     printf("at least one arg required\n");
     return;
   }
 
   /* call a function defined in example.lua, with one input, one output */
-  mxArray *inputs[1];
-  inputs[1] = plhs[0];
+  const mxArray *inputs[1];
+  inputs[0] = prhs[0];
   mxArray **outputs = mattorch_callfunc("transpose", 1, 1, inputs);
 
   /* return result */
-  if (nrhs >= 1) {
-    prhs[0] = outputs[0];
+  if (nlhs >= 1) {
+    plhs[0] = outputs[0];
   }
 }
