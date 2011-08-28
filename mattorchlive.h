@@ -1,6 +1,8 @@
 
 #define LIBNAME "mattorch"
 
+#define lua_c
+
 #include <lua.h>
 #include <luaT.h>
 #include <TH.h>

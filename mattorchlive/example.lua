@@ -1,5 +1,5 @@
 
-require "sys"
+require "torch"
 
 transpose = function(img)
                print('from Lua: receiving img of size: ', img:size())
