@@ -226,9 +226,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
   for (o=0; o<noutputs; o++) {
 
     // retrieve tensors returned, depending on their type
-    if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.DoubleTensor"))) {
+    if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.DoubleTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.DoubleTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.DoubleTensor"));
       THDoubleTensor *tensorc = THDoubleTensor_newContiguous((THDoubleTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
@@ -240,9 +240,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
              THDoubleTensor_nElement(tensorc) * sizeof(double));
       outputs[o] = pm;
 
-    } else if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.FloatTensor"))) {
+    } else if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.FloatTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.FloatTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.FloatTensor"));
       THFloatTensor *tensorc = THFloatTensor_newContiguous((THFloatTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
@@ -254,9 +254,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
              THFloatTensor_nElement(tensorc) * sizeof(float));
       outputs[o] = pm;
 
-    } else if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.IntTensor"))) {
+    } else if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.IntTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.IntTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.IntTensor"));
       THIntTensor *tensorc = THIntTensor_newContiguous((THIntTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
@@ -268,9 +268,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
              THIntTensor_nElement(tensorc) * sizeof(int));
       outputs[o] = pm;
 
-    } else if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.LongTensor"))) {
+    } else if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.LongTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.LongTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.LongTensor"));
       THLongTensor *tensorc = THLongTensor_newContiguous((THLongTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
@@ -282,9 +282,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
              THLongTensor_nElement(tensorc) * sizeof(long));
       outputs[o] = pm;
 
-    } else if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.ShortTensor"))) {
+    } else if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.ShortTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.ShortTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.ShortTensor"));
       THShortTensor *tensorc = THShortTensor_newContiguous((THShortTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
@@ -296,9 +296,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
              THShortTensor_nElement(tensorc) * sizeof(short));
       outputs[o] = pm;
 
-    } else if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.CharTensor"))) {
+    } else if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.CharTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.CharTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.CharTensor"));
       THCharTensor *tensorc = THCharTensor_newContiguous((THCharTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
@@ -310,9 +310,9 @@ mxArray ** mattorch_callfunc(const char *funcname, int ninputs, int noutputs, co
              THCharTensor_nElement(tensorc) * sizeof(char));
       outputs[o] = pm;
 
-    } else if (luaT_isudata(L, -1-o, luaT_checktypename2id(L, "torch.ByteTensor"))) {
+    } else if (luaT_isudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.ByteTensor"))) {
       // export tensor into matrix
-      void *tensor = luaT_toudata(L, -1-o, luaT_checktypename2id(L, "torch.ByteTensor"));
+      void *tensor = luaT_toudata(L, -noutputs+o, luaT_checktypename2id(L, "torch.ByteTensor"));
       THByteTensor *tensorc = THByteTensor_newContiguous((THByteTensor *)tensor);
       mwSize size[] = {-1,-1,-1,-1,-1,-1,-1,-1};
       const long ndims = tensorc->nDimension;
