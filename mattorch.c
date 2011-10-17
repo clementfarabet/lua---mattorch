@@ -270,11 +270,47 @@ static int save_table_l(lua_State *L) {
   return 0;
 }
 
+static int save_tensor_ascii_l(lua_State *L)
+{
+  // get file descriptor
+  THFile *file = luaT_checkudata(L, 1, torch_File_id);
+
+  // load tensor
+  THDoubleTensor *tensor = (THDoubleTensor *)luaT_checkudata(L, 2, luaT_checktypename2id(L, "torch.DoubleTensor"));
+  THDoubleTensor *tensorc = THDoubleTensor_newContiguous(tensor);
+  double *tensor_data = THDoubleTensor_data(tensorc);
+
+  // get sizes
+  const long ndims = tensorc->nDimension;
+  if (ndims > 2) {
+    THError("matlab ascii only supports 1d or 2d tensors");
+  }
+
+  // write all 
+  int i;
+  if (ndims == 2) {
+    for (i = 0; i < tensorc->size[0]; i ++) {
+      THFile_writeRealRaw(file, tensor_data, tensorc->size[1]);
+      tensor_data += tensorc->size[1];
+    }
+  } else {
+    for (i = 0; i < tensorc->size[0]; i ++) {
+      THFile_writeRealRaw(file, tensor_data, 1);
+      tensor_data += 1;
+    }
+  }
+
+  // cleanup
+  THDoubleTensor_free(tensorc);
+  return 0;
+}
+
 // Register functions in LUA
 static const struct luaL_reg matlab [] = {
   {"load", load_l},
   {"saveTensor", save_tensor_l},
   {"saveTable", save_table_l},
+  {"saveTensorAscii", save_tensor_ascii_l},
   {NULL, NULL}  /* sentinel */
 };
 
