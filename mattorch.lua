@@ -101,7 +101,7 @@ mattorch.save = function(path,vars)
 mattorch.saveAscii = function(path,var)
                         if type(var) == 'userdata' and torch.typename(var) == 'torch.DoubleTensor' then
                            local file = torch.DiskFile(path,'w')
-                           libmattorch.saveTensorAscii(path,var)
+                           libmattorch.saveTensorAscii(file, var)
                            file:close()
                         else
                            xlua.error('can only export 1D or 2D DoubleTensors','mattorch.saveAscii')
