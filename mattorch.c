@@ -273,7 +273,7 @@ static int save_table_l(lua_State *L) {
 static int save_tensor_ascii_l(lua_State *L)
 {
   // get file descriptor
-  THFile *file = luaT_checkudata(L, 1, torch_File_id);
+  THFile *file = luaT_checkudata(L, 1, luaT_checktypename2id(L, "torch.File"));
 
   // load tensor
   THDoubleTensor *tensor = (THDoubleTensor *)luaT_checkudata(L, 2, luaT_checktypename2id(L, "torch.DoubleTensor"));
