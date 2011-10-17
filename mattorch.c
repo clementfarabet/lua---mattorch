@@ -251,7 +251,7 @@ static int save_table_l(lua_State *L) {
 
     // copy tensor into array
     memcpy((void *)(mxGetPr(pm)), 
-           (void *)(THDoubleTensor_data(tensor)),
+           (void *)(THDoubleTensor_data(tensorc)),
            THDoubleTensor_nElement(tensor) * sizeof(double));
 
     // store it
