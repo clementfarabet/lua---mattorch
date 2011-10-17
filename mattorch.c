@@ -290,12 +290,12 @@ static int save_tensor_ascii_l(lua_State *L)
   int i;
   if (ndims == 2) {
     for (i = 0; i < tensorc->size[0]; i ++) {
-      THFile_writeRealRaw(file, tensor_data, tensorc->size[1]);
+      THFile_writeDoubleRaw(file, tensor_data, tensorc->size[1]);
       tensor_data += tensorc->size[1];
     }
   } else {
     for (i = 0; i < tensorc->size[0]; i ++) {
-      THFile_writeRealRaw(file, tensor_data, 1);
+      THFile_writeDoubleRaw(file, tensor_data, 1);
       tensor_data += 1;
     }
   }
