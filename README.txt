@@ -1,9 +1,11 @@
+DEPENDENCIES:
+Torch7 (www.torch.ch)
 
 INSTALL:
-$ luarocks --from=http://data.neuflow.org/lua/rocks install mattorch
+$ torch-pkg install mattorch
 
 USE:
-$ lua
+$ torch
 > require 'mattorch'
 -- save:
 > tensor1 = torch.Tensor(...)
