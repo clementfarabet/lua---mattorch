@@ -230,6 +230,9 @@ static int save_table_l(lua_State *L) {
   const char *path = lua_tostring(L,1);
   MATFile *file = matOpen(path, "w");
 
+  mxArray **pms;
+  pms = (mxArray**) malloc(sizeof(mxArray*)*1024);
+  int counter = 0;
   // table is in the stack at index 2 (2nd var)
   lua_pushnil(L);  // first key
   while (lua_next(L, 2) != 0) {
@@ -248,6 +251,7 @@ static int save_table_l(lua_State *L) {
 
     // create matlab array
     mxArray *pm = mxCreateNumericArray(ndims, size, mxDOUBLE_CLASS, mxREAL);
+    pms[counter++] = pm;
 
     // copy tensor into array
     memcpy((void *)(mxGetPr(pm)), 
@@ -263,6 +267,11 @@ static int save_table_l(lua_State *L) {
     // cleanup
     THDoubleTensor_free(tensorc);
   }
+  int i = 0;
+  for(i=0; i<counter;i++)
+    mxDestroyArray(pms[i]);
+  
+  free(pms);
 
   // cleanup
   lua_pop(L, 1);
